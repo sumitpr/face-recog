@@ -6,7 +6,7 @@
 		margin: 10px auto;
 		border: 1px solid rgba(0,0,0,0.1);
 		width: 320px;
-		height: 240px;
+		//height: 240px;
 		border-radius: 50%;
 	}
 
@@ -26,7 +26,7 @@
 .canvas {
 	//display: none;
 	width: 320px;
-	height: 240px;
+	//height: 240px;
 	margin: 10px auto;
 	border: 1px solid rgba(0,0,0,0.1);
 }		
