@@ -1,0 +1,46 @@
+.camera {
+	text-align: center;	
+}
+	.video {
+		display: block;
+		margin: 10px auto;
+		border: 1px solid rgba(0,0,0,0.1);
+		width: 320px;
+		height: 240px;
+		border-radius: 50%;
+	}
+
+	.btn-capture {
+		border: 0;
+		border-radius: 2px;
+		padding: 5px 8px;
+		background: rgba(0,0,0,0.2);
+	}
+		.btn-capture:hover {
+			background: rgba(0,0,0,0.23);		
+		}
+		.btn-capture::first-letter {
+			text-transform: uppercase;
+		}
+
+.canvas {
+	//display: none;
+	width: 320px;
+	height: 240px;
+	margin: 10px auto;
+	border: 1px solid rgba(0,0,0,0.1);
+}		
+
+.output {
+	display: block;
+	margin: 10px auto;
+	border: 1px solid rgba(0,0,0,0.1);
+	text-align: center;
+	width: 320px;
+}
+
+.op-image {
+	display: none;
+	//width:320px;
+	//height:240px;
+}
