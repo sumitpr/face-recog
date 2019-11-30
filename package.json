@@ -9,13 +9,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "build": "parcel build index.html"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
-    "face-api.js": "^0.21.0"
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.3"
