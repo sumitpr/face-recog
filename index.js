@@ -43,7 +43,7 @@ async function streamVideo() {
 
 function clearphoto() {
 	var context = canvas.getContext('2d');
-	context.fillStyle = "#AAA";
+	context.fillStyle = "rgba(0,0,0,0.1)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 
 	var data = canvas.toDataURL('image/png');
