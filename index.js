@@ -1,4 +1,4 @@
-import * as faceapi from "face-api.js";
+//import * as faceapi from "face-api.js";
 const video = document.querySelector(".video");
 const canvas = document.querySelector(".canvas");
 const btn = document.querySelector(".btn-capture");
