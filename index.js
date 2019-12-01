@@ -6,6 +6,11 @@ const image = document.querySelector(".op-image");
 const width = 320;
 let height = 0;
 let streaming = false;
+let persons = {};
+let fullFaceDescriptions = [];
+let detections = {};
+let descriptors = {};
+let faceMatcher = {};
 
 async function streamVideo() {
 	try {
@@ -50,23 +55,6 @@ function clearphoto() {
 	image.setAttribute('src', data);
 }
 
-
-const loadmodels = async () => {
-
-	//Promise.all([faceapi.nets.ssdMobilenetv1.loadFromUri('/models'), faceapi.nets.faceLandmark68Net.loadFromUri('/models'), faceapi.nets.faceRecognitionNet.loadFromUri('/models')]).then(streamVideo);
-
-	try {
-		await faceapi.loadTinyFaceDetectorModel('/models');
-		//await faceapi.loadSsdMobilenetv1Model('/models');
-		//await faceapi.loadFaceLandmarkModel('/models');
-		await faceapi.loadFaceLandmarkTinyModel('/models');
-		await faceapi.loadFaceRecognitionModel('/models');
-		console.log("Models ready");
-	} catch(err) {
-		console.log(err);
-	}
-}
-
 async function takepicture() {
 	var context = canvas.getContext('2d');
 	if (width && height) {
@@ -82,10 +70,15 @@ async function takepicture() {
 		try {
 			//let fullFaceDescriptions = await faceapi.detectSingleFace(image, options).withFaceLandmarks(true).withFaceDescriptors();
 			//let fullFaceDescriptions = await faceapi.detectSingleFace(image, options).withFaceLandmarks(true).withFaceDescriptor();
-			let fullFaceDescriptions = await faceapi.detectAllFaces(image, options).withFaceLandmarks(true).withFaceDescriptors();
+			fullFaceDescriptions = await faceapi.detectAllFaces(image, options).withFaceLandmarks(true).withFaceDescriptors();
 			console.log(fullFaceDescriptions);
 			faceapi.draw.drawDetections(canvas, fullFaceDescriptions);	
 			faceapi.draw.drawFaceLandmarks(canvas, fullFaceDescriptions);
+
+			// returns a new FaceMatcher object
+			faceMatcher = await createMatcher(persons);
+			await recognizeDetections();
+			
 		} catch(err) {
 			console.log(err);
 		}
@@ -95,10 +88,78 @@ async function takepicture() {
 	}
 }
 
-const MODEL_URL = '/models';
+async function loadmodels() {
+
+	//Promise.all([faceapi.nets.ssdMobilenetv1.loadFromUri('/models'), faceapi.nets.faceLandmark68Net.loadFromUri('/models'), faceapi.nets.faceRecognitionNet.loadFromUri('/models')]).then(streamVideo);
+
+	try {
+		await faceapi.loadTinyFaceDetectorModel('/models');
+		//await faceapi.loadSsdMobilenetv1Model('/models');
+		//await faceapi.loadFaceLandmarkModel('/models');
+		await faceapi.loadFaceLandmarkTinyModel('/models');
+		await faceapi.loadFaceRecognitionModel('/models');
+		console.log("Models ready");
+	} catch(err) {
+		console.log(err);
+	}
+}
+
+async function loadPersons() {
+	try {
+		const response = await fetch('descriptors/persons.json');
+		persons = await response.json();
+		console.log(persons);
+	} catch(err) {
+		console.log("Cannot parse reference models");
+	}
+}
+
+async function createMatcher(referenceProfile) {
+	const maxDescriptorDistance = 0.5;
+	// Create labeled descriptors of member from profile
+	let members = Object.keys(referenceProfile);
+	let labeledDescriptors = members.map(
+		member =>
+		new faceapi.LabeledFaceDescriptors(
+			referenceProfile[member].name,
+			referenceProfile[member].descriptors.map(
+				descriptor => new Float32Array(descriptor)
+				)
+			)
+		);
+
+	// Create face matcher (maximum descriptor distance is 0.5)
+	let faceMatcher = new faceapi.FaceMatcher(
+		labeledDescriptors,
+		maxDescriptorDistance
+		);
+	return faceMatcher;
+}
+
+async function recognizeDetections() {
+	if (!!fullFaceDescriptions) {
+		detections =  fullFaceDescriptions.map(fd => fd.detection);
+		descriptors = fullFaceDescriptions.map(fd => fd.descriptor);
+	}
+
+	if (!!descriptors && !!faceMatcher) {
+		let match = await descriptors.map(descriptor =>
+			faceMatcher.findBestMatch(descriptor)
+			);
+		console.log(match);
+	}
+};
+
+async function init() {
+	// start streaming video from webcam
+	streamVideo();
+	
+	// load detection and descriptor models
+	await loadmodels();
+	// loads persons reference data into persons
+	await loadPersons();
+}
 
 window.onload = function() {
-	streamVideo();
-	//console.log("video loaded");
-	loadmodels();
+	init();
 };
