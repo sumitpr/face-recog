@@ -55,12 +55,12 @@ const loadmodels = async () => {
 
 	//Promise.all([faceapi.nets.ssdMobilenetv1.loadFromUri('/models'), faceapi.nets.faceLandmark68Net.loadFromUri('/models'), faceapi.nets.faceRecognitionNet.loadFromUri('/models')]).then(streamVideo);
 
-
 	try {
 		await faceapi.loadTinyFaceDetectorModel('/models');
 		//await faceapi.loadSsdMobilenetv1Model('/models');
 		//await faceapi.loadFaceLandmarkModel('/models');
-		//await faceapi.loadFaceRecognitionModel('/models');
+		await faceapi.loadFaceLandmarkTinyModel('/models');
+		await faceapi.loadFaceRecognitionModel('/models');
 		console.log("Models ready");
 	} catch(err) {
 		console.log(err);
@@ -80,11 +80,12 @@ async function takepicture() {
 		const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320 });
 
 		try {
-			//let fullFaceDescriptions = await faceapi.detectSingleFace(image, options).withFaceLandmarks();
-			let fullFaceDescriptions = await faceapi.detectAllFaces(image, options);
+			//let fullFaceDescriptions = await faceapi.detectSingleFace(image, options).withFaceLandmarks(true).withFaceDescriptors();
+			//let fullFaceDescriptions = await faceapi.detectSingleFace(image, options).withFaceLandmarks(true).withFaceDescriptor();
+			let fullFaceDescriptions = await faceapi.detectAllFaces(image, options).withFaceLandmarks(true).withFaceDescriptors();
 			console.log(fullFaceDescriptions);
 			faceapi.draw.drawDetections(canvas, fullFaceDescriptions);	
-			//faceapi.draw.drawFaceLandmarks(canvas, fullFaceDescriptions);	
+			faceapi.draw.drawFaceLandmarks(canvas, fullFaceDescriptions);
 		} catch(err) {
 			console.log(err);
 		}
