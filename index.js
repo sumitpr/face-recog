@@ -78,7 +78,7 @@ async function takepicture() {
 			// returns a new FaceMatcher object
 			faceMatcher = await createMatcher(persons);
 			await recognizeDetections();
-			
+
 		} catch(err) {
 			console.log(err);
 		}
@@ -147,6 +147,9 @@ async function recognizeDetections() {
 			faceMatcher.findBestMatch(descriptor)
 			);
 		console.log(match);
+		if(match.length > 0) {
+			alert(match[0].label);
+		}
 	}
 };
 
